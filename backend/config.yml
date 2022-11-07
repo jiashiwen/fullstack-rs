@@ -1,0 +1,13 @@
+tikv:
+  pdaddrs:
+  - 127.0.0.1:2379
+redis:
+  instance:
+    urls:
+    - redis://:redistest0102@114.67.76.82:16377
+    password: ''
+    instance_type: single
+  lazy: false
+    #http:
+  #port: 3000
+  #bind: 240f:c0ff:0:3::64

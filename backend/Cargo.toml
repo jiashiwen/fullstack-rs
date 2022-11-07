@@ -1,0 +1,48 @@
+[package]
+name = "backend"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = "4.0.18"
+rustyline = "9.1.2"
+shellwords = "1.1.0"
+log = "0.4.17"
+log4rs = "1.2.0"
+serde = { version = "1.0.147", features = ["derive"] }
+serde_json = "1.0.87"
+serde_yaml = "0.9.14"
+rustyline-derive = "0.7.0"
+lazy_static = "1.4.0"
+tokio = { version = "1.21.2", features = ["full"] }
+anyhow = "1.0.66"
+futures = "0.3.25"
+# ToDo 将 fork 替换为 daemonize
+fork = "0.1"
+sysinfo = "0.26.7"
+axum = { version = "0.5.17 ", features = ["default", "headers","json"] }
+axum-macros = "0.2.3"
+tower-http = { version = "0.3.4", features = ["trace", "compression-full", "auth","fs"] }
+tower = { version = "0.4.13", features = ["timeout"] }
+tikv-client = { git = "https://github.com/andylokandy/client-rust" }
+casbin = { version = "2.0.9", default-features = false, features = ["runtime-async-std", "logging", "incremental"] }
+strum = "0.24.1"
+strum_macros = "0.24.3"
+once_cell = "1.16.0"
+async_once = "0.2.6"
+http-body = "0.4.5"
+rust-crypto = "0.2.36"
+chrono = "0.4.22"
+base64 = "0.13.1"
+dashmap = "5.4.0"
+futures-locks = "0.7.0"
+rust-embed = "6.4.2"
+hyper = "0.14.22"
+hyper-tls = "0.5.0"
+curl = "0.4.44"
+regex = "1.6.0"
+redis =  { version = "0.22.1", features = ["default", "tokio-comp", "async-std-comp", "cluster"] }
+r2d2 = "0.8.10"
+num_cpus = "1.14.0"
