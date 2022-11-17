@@ -3,13 +3,14 @@ use crate::commons::CommandCompleter;
 use crate::commons::SubCmd;
 use crate::configure::{generate_default_config, set_config_file_path};
 use crate::configure::{get_config, get_config_file_path, get_current_config_yml, set_config};
-use crate::resources::init_redis_pool;
+
+use crate::resources::init_resources;
 use crate::{httpserver, interact};
 use clap::{Arg, ArgAction, ArgMatches};
 use fork::{daemon, Fork};
 use lazy_static::lazy_static;
 use std::borrow::Borrow;
-use std::net::{self, IpAddr, SocketAddr};
+use std::net::{self, IpAddr};
 use std::process::Command;
 use std::str::FromStr;
 use std::{env, fs, thread};
@@ -134,32 +135,20 @@ fn cmd_match(matches: &ArgMatches) {
             std::process::exit(0);
         }
 
-        let banner =
-            "                                                                                      
-                    .                                                                 
-                .'ck0Oo;.                                         .'.                 
-             .;d0NMMMMMWKxc'                                     .dNk.                
-         .'lkKWMMMMMMMMMMW0o.                                    .dWWKc               
-      .;o0NMMMMMMMMMMWXOo;.                                       .codc.    ......    
-   .:xKWMMMMMMMMMMMM0c.             .                       ...';:clodxkkOO00KKXXKc.  
-   '0MMMMMMMMMMMMMMWo            'cxO;               'cloxkOOOOOk0NMNOolcccccllodko.  
-   '0MMMMMMWWMMMMMMWd        .;oONMMN:               .dkdlc;'...'xX0:.  ..            
-   '0MMMNOocOMMMMMMWd       .dWMMMMMNc                         :0Ko.  .dX0c.          
-   'OKxc'   dWMMMMMWd       .kMMMMMMNc                      .,kNNx:;:o0NOo,           
-    ..      dWMMMMMWo       .kMMMMMMNc                    .o0NWWX0KWWXx;.             
-            dWMMMMMWo       .kMMMMMMNc                     ;dl:,,o00o'                
-            dWMMMMMWo       .kMMMMMMNc                        .;k0o.   .::;;.         
-            dWMMMMMWo       .kMMMMMMNc                      .:ONO:',:lkk:..,xo.       
-            dWMMMMMWo       .kMMMMMMNc                   ;dkKWMWX0KXK0O:..:xXX:       
-            dWMMMMMWo       .kMMMMNOl.                   ,OX0kdlc;'...   .:xKXl       
-            dWMMMMMWo       .kWKxc'                       ...               ...       
-            cKWMMMMWo        ,;.                                                      
-             .:d0NMWo                                                                 
-                .,ld;                                                                 
-                                                                                      ";
+        let banner = "
+                            
+        . . .     |                 
+        | | |,---.|---.   ,---.,---.
+        | | ||---'|   |---|    `---.
+        `-'-'`---'`---'   `    `---'
+                                    
+        ";
         println!("{}", banner);
         println!("current pid is:{}", std::process::id());
-        init_redis_pool();
+
+        let rt = Runtime::new().unwrap();
+        rt.block_on(async { init_resources().await.unwrap() });
+
         let (tx, rx) = tokio::sync::oneshot::channel::<()>();
         let async_http_server = async {
             let config = get_config().unwrap();
@@ -185,9 +174,8 @@ fn cmd_match(matches: &ArgMatches) {
 
     if let Some(ref _matches) = matches.subcommand_matches("stop") {
         println!("server stopping...");
-        // let sys = System::new_with_specifics(RefreshKind::with_processes(Default::default()));
-        let sys = System::new_with_specifics(RefreshKind::everything().without_disks_list());
 
+        let sys = System::new_with_specifics(RefreshKind::everything().without_disks_list());
         let pidstr = String::from_utf8(fs::read("pid").unwrap()).unwrap();
         let pid = Pid::from_str(pidstr.as_str()).unwrap();
 

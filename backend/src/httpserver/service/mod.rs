@@ -1,8 +1,10 @@
+mod service_mysql;
 mod service_redis;
 mod service_tikv_raw;
 mod service_tikv_txn;
 mod service_user;
 
+pub use service_mysql::insert_rbatis_t;
 pub use service_redis::put;
 pub use service_tikv_raw::s_raw_flush_all;
 pub use service_tikv_raw::s_raw_get;

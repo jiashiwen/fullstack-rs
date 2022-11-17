@@ -1,17 +1,14 @@
 use std::time::Duration;
 
 use crate::configure::get_config;
-use anyhow::{anyhow, Result};
-use once_cell::sync::OnceCell;
+use anyhow::Result;
+
 use r2d2::Pool;
 use redis::{
     cluster::ClusterClientBuilder, from_redis_value, ConnectionLike, FromRedisValue, RedisError,
     RedisResult,
 };
 use serde::{Deserialize, Serialize};
-
-// 全局 redis pool
-pub static GLOBAL_REDIS_POOL: OnceCell<r2d2::Pool<RedisConnectionManager>> = OnceCell::new();
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
@@ -63,7 +60,7 @@ impl RedisInstance {
                 if !self.password.is_empty() {
                     cb = cb.password(self.password.clone());
                 }
-                let cl = cb.open()?;
+                let cl = cb.build()?;
                 Ok(RedisClient::Cluster(cl))
             }
         };
@@ -149,21 +146,23 @@ impl r2d2::ManageConnection for RedisConnectionManager {
     }
 }
 
-pub fn init_redis_pool() {
-    GLOBAL_REDIS_POOL.get_or_init(|| {
-        let pool = gen_redis_conn_pool().unwrap();
-        pool
-    });
-}
+// pub fn init_redis_pool() {
+//     GLOBAL_REDIS_POOL.get_or_init(|| {
+//         let pool = gen_redis_conn_pool().unwrap();
+//         pool
+//     });
+// }
 
-fn gen_redis_conn_pool() -> Result<Pool<RedisConnectionManager>> {
+pub fn gen_redis_conn_pool() -> Result<Pool<RedisConnectionManager>> {
     let config = get_config()?;
     let redis_client = config.redis.instance.to_redis_client()?;
     let manager = RedisConnectionManager { redis_client };
     let pool = r2d2::Pool::builder()
-        .max_size(6)
-        .min_idle(Some(1))
-        .connection_timeout(Duration::from_secs(2))
+        .max_size(config.redis.pool.max_size as u32)
+        .min_idle(Some(config.redis.pool.mini_idle as u32))
+        .connection_timeout(Duration::from_secs(
+            config.redis.pool.connection_timeout as u64,
+        ))
         .build(manager)?;
     Ok(pool)
 }

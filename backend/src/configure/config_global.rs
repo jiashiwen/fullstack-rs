@@ -38,10 +38,47 @@ impl HttpConfig {
         "::0".to_string()
     }
 }
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "lowercase")]
+pub struct RedisPool {
+    #[serde(default = "RedisPool::max_size_default")]
+    pub max_size: usize,
+    #[serde(default = "RedisPool::mini_idle_default")]
+    pub mini_idle: usize,
+    #[serde(default = "RedisPool::connection_timeout_default")]
+    pub connection_timeout: usize,
+}
+
+impl Default for RedisPool {
+    fn default() -> Self {
+        Self {
+            max_size: 1,
+            mini_idle: 1,
+            connection_timeout: 10,
+        }
+    }
+}
+
+impl RedisPool {
+    pub fn max_size_default() -> usize {
+        1
+    }
+
+    pub fn mini_idle_default() -> usize {
+        1
+    }
+
+    pub fn connection_timeout_default() -> usize {
+        10
+    }
+}
+
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RedisConfig {
     pub instance: RedisInstance,
     pub lazy: bool,
+    pub pool: RedisPool,
 }
 
 impl Default for RedisConfig {
@@ -49,6 +86,22 @@ impl Default for RedisConfig {
         Self {
             instance: RedisInstance::default(),
             lazy: false,
+            pool: RedisPool::default(),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+pub struct DatasourceMySql {
+    pub mysql_uri: String,
+    pub pool_size: usize,
+}
+
+impl Default for DatasourceMySql {
+    fn default() -> Self {
+        Self {
+            mysql_uri: "mysql://root:123@127.0.0.1:3306".to_string(),
+            pool_size: 1,
         }
     }
 }
@@ -59,6 +112,7 @@ pub struct Config {
     pub redis: RedisConfig,
     #[serde(default = "Config::http_default")]
     pub http: HttpConfig,
+    pub datasource_mysql: DatasourceMySql,
 }
 
 impl Config {
@@ -67,6 +121,7 @@ impl Config {
             tikv: TiKVConfig::default(),
             http: HttpConfig::default(),
             redis: RedisConfig::default(),
+            datasource_mysql: DatasourceMySql::default(),
         }
     }
 
@@ -77,6 +132,7 @@ impl Config {
         self.tikv = config.tikv;
         self.redis = config.redis;
         self.http = config.http;
+        self.datasource_mysql = config.datasource_mysql;
     }
 
     pub fn get_config_image(&self) -> Self {

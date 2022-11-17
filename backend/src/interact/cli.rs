@@ -13,7 +13,6 @@ use std::borrow::Cow::{self, Borrowed, Owned};
 
 #[derive(Helper)]
 struct MyHelper {
-    // completer: FileCompleter,
     completer: CommandCompleter,
     highlighter: MatchingBracketHighlighter,
     validator: MatchingBracketValidator,
@@ -97,16 +96,15 @@ pub fn run() {
     };
 
     let mut rl = Editor::with_config(config);
-    // let mut rl = Editor::<()>::new();
     rl.set_helper(Some(h));
-
     if rl.load_history("/tmp/history").is_err() {
         println!("No previous history.");
     }
 
+    let p = format!("{}> ", "web-rs");
+    rl.helper_mut().expect("No helper").colored_prompt = format!("\x1b[1;32m{}\x1b[0m", p);
+
     loop {
-        let p = format!("{}> ", "interact-rs");
-        rl.helper_mut().expect("No helper").colored_prompt = format!("\x1b[1;32m{}\x1b[0m", p);
         let readline = rl.readline(&p);
         match readline {
             Ok(line) => {
@@ -121,7 +119,7 @@ pub fn run() {
                             println!("bye!");
                             break;
                         }
-                        arg.insert(0, "clisample".to_string());
+                        arg.insert(0, "cli".to_string());
                         run_from(arg.to_vec())
                     }
                     Err(err) => {

@@ -7,3 +7,4 @@ mod middleware;
 pub(crate) mod module;
 mod routers;
 mod service;
+mod dao;

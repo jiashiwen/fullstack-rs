@@ -5,12 +5,30 @@ use casbin::MemoryAdapter;
 use casbin::Result;
 use futures_locks::RwLock;
 
-lazy_static::lazy_static! {
-    static ref GLOBALE_CASBIN_ENFORCER: AsyncOnce<RwLock<CasbinEnforcer>> = AsyncOnce::new(async {
-        let ce=CasbinEnforcer::default().await;
+use once_cell::sync::Lazy;
+
+// lazy_static::lazy_static! {
+//     static ref GLOBALE_CASBIN_ENFORCER: AsyncOnce<RwLock<CasbinEnforcer>> = AsyncOnce::new(async {
+//         let ce=CasbinEnforcer::default().await;
+//         RwLock::new(ce)
+//     });
+// }
+
+// static GLOBALE_CASBIN_ENFORCER: Lazy<RwLock<CasbinEnforcer>> = Lazy::new(|| {
+//     AsyncOnce::new(async {
+//         let ce = CasbinEnforcer::default().await;
+//         RwLock::new(ce)
+//     });
+// });
+
+static GLOBALE_CASBIN_ENFORCER: Lazy<RwLock<CasbinEnforcer>> = Lazy::new(|| {
+    let rw_casbin_enforcer = futures::executor::block_on(async {
+        let ce = CasbinEnforcer::default().await;
         RwLock::new(ce)
     });
-}
+    rw_casbin_enforcer
+});
+
 pub struct CasbinEnforcer {
     enforcer: Enforcer,
 }
@@ -71,29 +89,15 @@ impl CasbinEnforcer {
 }
 
 pub async fn casbin_enforce(args: Vec<String>) -> Result<bool> {
-    GLOBALE_CASBIN_ENFORCER
-        .get()
-        .await
-        .read()
-        .await
-        .enforcer
-        .enforce(args)
+    GLOBALE_CASBIN_ENFORCER.read().await.enforcer.enforce(args)
 }
 
 pub async fn add_policy(p: Vec<String>) -> Result<bool> {
-    GLOBALE_CASBIN_ENFORCER
-        .get()
-        .await
-        .write()
-        .await
-        .addpolice(p)
-        .await
+    GLOBALE_CASBIN_ENFORCER.write().await.addpolice(p).await
 }
 
 pub async fn remove_policy(p: Vec<String>) -> Result<bool> {
     GLOBALE_CASBIN_ENFORCER
-        .get()
-        .await
         .write()
         .await
         .enforcer
@@ -103,8 +107,6 @@ pub async fn remove_policy(p: Vec<String>) -> Result<bool> {
 
 pub async fn add_grouping_policy(gp: Vec<String>) -> Result<bool> {
     GLOBALE_CASBIN_ENFORCER
-        .get()
-        .await
         .write()
         .await
         .enforcer
@@ -114,8 +116,6 @@ pub async fn add_grouping_policy(gp: Vec<String>) -> Result<bool> {
 
 pub async fn remove_grouping_policy(gp: Vec<String>) -> Result<bool> {
     GLOBALE_CASBIN_ENFORCER
-        .get()
-        .await
         .write()
         .await
         .enforcer
@@ -125,11 +125,10 @@ pub async fn remove_grouping_policy(gp: Vec<String>) -> Result<bool> {
 
 pub async fn get_all_policy() -> Vec<Vec<String>> {
     let vec = GLOBALE_CASBIN_ENFORCER
-        .get()
-        .await
         .read()
         .await
         .enforcer
         .get_all_policy();
+
     vec
 }

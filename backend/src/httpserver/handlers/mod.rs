@@ -4,6 +4,7 @@ mod handler_rawkv;
 
 mod authhandler;
 mod handler_httpquery;
+mod handler_mysql;
 mod handler_redis;
 mod handler_root;
 mod handler_txn;
@@ -14,6 +15,7 @@ pub use config::current_config;
 pub use handler_httpquery::baidu;
 pub use handler_login::login;
 pub use handler_login::logout;
+pub use handler_mysql::rbatis_t_insert;
 pub use handler_rawkv::raw_flush;
 pub use handler_rawkv::raw_get;
 pub use handler_rawkv::raw_put;

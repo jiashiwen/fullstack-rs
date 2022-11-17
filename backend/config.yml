@@ -8,6 +8,13 @@ redis:
     password: ''
     instance_type: single
   lazy: false
+  pool:
+    max_size: 10
+    mini_idle: 1
+    connection_timeout: 10
+datasource_mysql:
+  mysql_uri: "mysql://rust_test:Git785230root@mysql-internet-cn-north-1-1221449f8fb94332.rds.jdcloud.com:3306/rust_test"
+  pool_size: 3
     #http:
   #port: 3000
   #bind: 240f:c0ff:0:3::64

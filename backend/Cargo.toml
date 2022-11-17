@@ -43,6 +43,27 @@ hyper = "0.14.22"
 hyper-tls = "0.5.0"
 curl = "0.4.44"
 regex = "1.6.0"
+num_cpus = "1.14.0"
+signal-hook = { version = "0.3.14", features = ["default","extended-siginfo"] }
+
+
+
+# redis integration
 redis =  { version = "0.22.1", features = ["default", "tokio-comp", "async-std-comp", "cluster"] }
 r2d2 = "0.8.10"
-num_cpus = "1.14.0"
+
+# rbatis integration
+rbs = "0.1.11"
+rbatis = "4.0.41"
+rbdc-mysql = "0.1.17"
+# rbdc-oracle = "0.1.1"
+# rbdc-sqlite = { version = "0.1" }
+
+[[example]]
+name = "rbatis"
+path = "examples/rbatis_sample.rs"
+
+[[example]]
+name = "signal"
+path = "examples/signal_sample.rs"
+
