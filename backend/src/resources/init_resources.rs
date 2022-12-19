@@ -4,22 +4,11 @@ use once_cell::sync::Lazy;
 use once_cell::sync::OnceCell;
 use rbatis::Rbatis;
 use std::sync::Mutex;
-use tokio::runtime::Runtime;
 
 use super::mysql_rbatis_resource::init_datasource_mysql;
 use super::redis_resource::gen_redis_conn_pool;
 use super::redis_resource::RedisConnectionManager;
 
-// lazy_static::lazy_static! {
-//     static ref GLOBAL_PD_ENDPOINT: Mutex<Vec<String>> = Mutex::new(vec![]);
-
-//     static ref GLOBAL_TiKV: AsyncOnce<TiKVHandler> = AsyncOnce::new(async {
-//         let endpoint= GLOBAL_PD_ENDPOINT.lock().unwrap().to_vec();
-//         let pd: Vec<&str> = endpoint.iter().map(|s| &**s).collect();
-//         let global_TiKV = TiKVHandler::new(pd).await;
-//         global_TiKV
-//     });
-// }
 // 全局 redis pool
 pub static GLOBAL_REDIS_POOL: OnceCell<r2d2::Pool<RedisConnectionManager>> = OnceCell::new();
 pub static GLOBAL_RBATIS_MYSQL: Lazy<rbatis::Rbatis> = Lazy::new(|| {

@@ -1,15 +1,16 @@
 use logger::init_log;
 
+mod casbin_rbatis_adapter;
 mod cmd;
 mod commons;
 mod configure;
 mod errors;
+mod httpquerry;
 mod httpserver;
 mod interact;
 mod logger;
 mod privilege;
 mod resources;
-mod httpquerry;
 
 fn main() {
     init_log();

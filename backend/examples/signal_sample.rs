@@ -1,4 +1,5 @@
 use std::io::Error;
+use std::process::exit;
 use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 use std::thread;
@@ -9,23 +10,22 @@ use signal_hook::consts::TERM_SIGNALS;
 use signal_hook::flag;
 // A friend of the Signals iterator, but can be customized by what we want yielded about each
 // signal.
-use signal_hook::iterator::exfiltrator::WithOrigin;
-use signal_hook::iterator::SignalsInfo;
+use signal_hook::iterator::{exfiltrator::WithOrigin, SignalsInfo};
 
 use signal_hook::low_level;
 
 fn main() -> Result<(), Error> {
     // Make sure double CTRL+C and similar kills
     let term_now = Arc::new(AtomicBool::new(false));
-    for sig in TERM_SIGNALS {
-        // When terminated by a second term signal, exit with exit code 1.
-        // This will do nothing the first time (because term_now is false).
-        flag::register_conditional_shutdown(*sig, 1, Arc::clone(&term_now))?;
-        // But this will "arm" the above for the second time, by setting it to true.
-        // The order of registering these is important, if you put this one first, it will
-        // first arm and then terminate ‒ all in the first round.
-        flag::register(*sig, Arc::clone(&term_now))?;
-    }
+    // for sig in TERM_SIGNALS {
+    //     // When terminated by a second term signal, exit with exit code 1.
+    //     // This will do nothing the first time (because term_now is false).
+    //     flag::register_conditional_shutdown(*sig, 1, Arc::clone(&term_now))?;
+    //     // But this will "arm" the above for the second time, by setting it to true.
+    //     // The order of registering these is important, if you put this one first, it will
+    //     // first arm and then terminate ‒ all in the first round.
+    //     flag::register(*sig, Arc::clone(&term_now))?;
+    // }
 
     // Subscribe to all these signals with information about where they come from. We use the
     // extra info only for logging in this example (it is not available on all the OSes or at
@@ -57,6 +57,10 @@ fn main() -> Result<(), Error> {
         // Will print info about signal + where it comes from.
         eprintln!("Received a signal {:?}", info);
         match info.signal {
+            SIGTERM => {
+                println!("kill 15!");
+                exit(1);
+            }
             SIGTSTP => {
                 // Restore the terminal to non-TUI mode
                 if has_terminal {
@@ -80,11 +84,11 @@ fn main() -> Result<(), Error> {
             }
             SIGHUP => {
                 // app.reload_config()
-                println!("get sighup")
+                println!("get sighup");
             }
             SIGUSR1 => {
                 // app.print_stats()
-                println!("get singusr1")
+                println!("get singusr1");
             }
             term_sig => {
                 // These are all the ones left

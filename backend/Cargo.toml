@@ -53,9 +53,9 @@ redis =  { version = "0.22.1", features = ["default", "tokio-comp", "async-std-c
 r2d2 = "0.8.10"
 
 # rbatis integration
-rbs = "0.1.11"
-rbatis = "4.0.41"
-rbdc-mysql = "0.1.17"
+rbs = "0.1.13"
+rbatis = "4.0.43"
+rbdc-mysql = "0.1.18"
 # rbdc-oracle = "0.1.1"
 # rbdc-sqlite = { version = "0.1" }
 

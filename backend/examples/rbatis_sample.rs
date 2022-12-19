@@ -1,13 +1,15 @@
 use rbatis::Rbatis;
 use rbdc_mysql::driver::MysqlDriver;
+use rbs::to_value;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BizActivity {
-    pub col1: Option<i64>,
-    pub col2: Option<String>,
+    pub Col1: Option<i32>,
+    pub Col2: Option<String>,
 }
 
+rbatis::crud!(BizActivity {}, "rbatis_t");
 #[tokio::main]
 async fn main() {
     let rb = Rbatis::new();
@@ -26,6 +28,11 @@ async fn main() {
         .fetch_decode("select * from rbatis_t", vec![])
         .await
         .unwrap();
-
     println!(">>>>> table={:?}", table);
+
+    let row: BizActivity = rb
+        .fetch_decode("select * from rbatis_t limit ?;", vec![to_value!(1)])
+        .await
+        .unwrap();
+    println!(">>>>> row={:?}", row);
 }

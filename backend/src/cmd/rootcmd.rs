@@ -9,9 +9,12 @@ use crate::{httpserver, interact};
 use clap::{Arg, ArgAction, ArgMatches};
 use fork::{daemon, Fork};
 use lazy_static::lazy_static;
+use signal_hook::consts::{SIGTERM, TERM_SIGNALS};
+use signal_hook::iterator::exfiltrator::WithOrigin;
+use signal_hook::iterator::SignalsInfo;
 use std::borrow::Borrow;
 use std::net::{self, IpAddr};
-use std::process::Command;
+use std::process::{exit, Command};
 use std::str::FromStr;
 use std::{env, fs, thread};
 use sysinfo::{Pid, ProcessExt, RefreshKind, System, SystemExt};
@@ -135,17 +138,16 @@ fn cmd_match(matches: &ArgMatches) {
             std::process::exit(0);
         }
 
-        let banner = "
-                            
+        let banner = "                                   
         . . .     |                 
         | | |,---.|---.   ,---.,---.
         | | ||---'|   |---|    `---.
-        `-'-'`---'`---'   `    `---'
-                                    
+        `-'-'`---'`---'   `    `---'                                    
         ";
         println!("{}", banner);
         println!("current pid is:{}", std::process::id());
 
+        // 初始化外部资源
         let rt = Runtime::new().unwrap();
         rt.block_on(async { init_resources().await.unwrap() });
 
@@ -169,7 +171,31 @@ fn cmd_match(matches: &ArgMatches) {
             let rt = Runtime::new().unwrap();
             rt.block_on(async_http_server);
         });
+
+        let thread_signale = thread::spawn(|| {
+            // 添加signal处理机制
+            let mut sigs = vec![];
+            sigs.extend(TERM_SIGNALS);
+            let mut signals = SignalsInfo::<WithOrigin>::new(&sigs).unwrap();
+            for info in &mut signals {
+                // Will print info about signal + where it comes from.
+                eprintln!("Received a signal {:?}", info);
+                match info.signal {
+                    SIGTERM => {
+                        println!("kill !");
+                        exit(1);
+                    }
+                    term_sig => {
+                        eprintln!("Terminating");
+                        // do some before exit
+
+                        exit(0)
+                    }
+                }
+            }
+        });
         thread_http.join().unwrap();
+        thread_signale.join().unwrap();
     }
 
     if let Some(ref _matches) = matches.subcommand_matches("stop") {

@@ -7,7 +7,9 @@
 - [x] 集成redis
 - [x] 集成rbatis
 - [ ] 完善基于 casbin 的权限系统，并与axum集成
-- [ ]  
+  - [ ] 持久化组件 rbatis-adepter,新开工程
+  - [ ] rbatis dao 层模式探索
+- [ ] 操作系统signal处理，优雅退出
 
 ## 系统优化
 

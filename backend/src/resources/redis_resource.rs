@@ -120,6 +120,7 @@ pub struct RedisConnectionManager {
     pub redis_client: RedisClient,
 }
 
+// ToDo 实现 broken 函数
 impl r2d2::ManageConnection for RedisConnectionManager {
     type Connection = RedisConnection;
     type Error = RedisError;
