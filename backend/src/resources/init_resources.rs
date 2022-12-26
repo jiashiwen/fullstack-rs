@@ -1,4 +1,3 @@
-use crate::resources::tikv::TiKVHandler;
 use anyhow::Result;
 use once_cell::sync::Lazy;
 use once_cell::sync::OnceCell;
@@ -20,12 +19,12 @@ pub static GLOBAL_RBATIS_MYSQL: Lazy<rbatis::Rbatis> = Lazy::new(|| {
 });
 
 static GLOBAL_PD_ENDPOINT: Lazy<Mutex<Vec<String>>> = Lazy::new(|| Mutex::new(vec![]));
-static GLOBAL_TiKV: Lazy<TiKVHandler> = Lazy::new(|| {
-    let endpoint = GLOBAL_PD_ENDPOINT.lock().unwrap().to_vec();
-    let pd: Vec<&str> = endpoint.iter().map(|s| &**s).collect();
-    let global_TiKV = futures::executor::block_on(async { TiKVHandler::new(pd).await });
-    global_TiKV
-});
+// static GLOBAL_TiKV: Lazy<TiKVHandler> = Lazy::new(|| {
+//     let endpoint = GLOBAL_PD_ENDPOINT.lock().unwrap().to_vec();
+//     let pd: Vec<&str> = endpoint.iter().map(|s| &**s).collect();
+//     let global_TiKV = futures::executor::block_on(async { TiKVHandler::new(pd).await });
+//     global_TiKV
+// });
 
 pub struct DataSourceMysql {
     pub rbatis: Rbatis,
@@ -70,20 +69,20 @@ async fn init_global_rbatis_mysql() -> Result<()> {
     Ok(())
 }
 
-pub fn set_tikv(endpoint: Vec<&str>) {
-    if endpoint.is_empty() {
-        GLOBAL_PD_ENDPOINT
-            .lock()
-            .unwrap()
-            .push("127.0.0.1:2379".to_string());
-        return;
-    }
+// pub fn set_tikv(endpoint: Vec<&str>) {
+//     if endpoint.is_empty() {
+//         GLOBAL_PD_ENDPOINT
+//             .lock()
+//             .unwrap()
+//             .push("127.0.0.1:2379".to_string());
+//         return;
+//     }
 
-    for str in endpoint {
-        GLOBAL_PD_ENDPOINT.lock().unwrap().push(String::from(str));
-    }
-}
+//     for str in endpoint {
+//         GLOBAL_PD_ENDPOINT.lock().unwrap().push(String::from(str));
+//     }
+// }
 
-pub async fn get_tikv_handler() -> &'static TiKVHandler {
-    &GLOBAL_TiKV
-}
+// pub async fn get_tikv_handler() -> &'static TiKVHandler {
+//     &GLOBAL_TiKV
+// }

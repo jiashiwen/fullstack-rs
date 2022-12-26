@@ -1,6 +1,6 @@
 use logger::init_log;
 
-mod casbin_rbatis_adapter;
+// mod casbin_rbatis_adapter;
 mod cmd;
 mod commons;
 mod configure;
