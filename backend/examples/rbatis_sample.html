@@ -15,6 +15,23 @@
             ${item}
         </foreach>
     </insert>
+
+    <update id="update_by_condition">
+        `update rbatis_sample `
+        <set>
+            <if test="mobile != ''">
+                ` mobile=#{mobile}`
+            </if>
+            <if test="name !=''">
+                ` name=#{name}`
+            </if>
+            ` update_time=DateTime(#{update_dt})`
+        </set>
+        <where>
+            ` id=#{id}`
+        </where>
+    </update>
+
     <select id="select_by_condition">
         `select * from rbatis_sample`
         <where>
