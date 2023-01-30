@@ -2,7 +2,7 @@
     PUBLIC "-//W3C//DTD XHTML 1.1//EN" "https://raw.githubusercontent.com/rbatis/rbatis/master/rbatis-codegen/mybatis-3-mapper.dtd">
 <mapper>
     <insert id="insert_rbatis_sample">
-        `insert into rbatis_sample (name,sex,mobile,create_time) values `
+        `insert into rbatis_sample (id,name,sex,mobile,create_time,update_time) values `
         <!-- <foreach collection="arg" index="key" item="item" open="(" close=")" separator=",">
             <if test="key == 'id'">
                 <continue />
@@ -23,9 +23,9 @@
                 ` mobile=#{mobile}`
             </if>
             <if test="name !=''">
-                ` name=#{name}`
+                `,name=#{name}`
             </if>
-            ` update_time=DateTime(#{update_dt})`
+            `,update_time=#{update_dt}`
         </set>
         <where>
             ` id=#{id}`

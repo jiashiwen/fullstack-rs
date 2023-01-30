@@ -56,12 +56,30 @@ fast_log = "1.5"
 redis =  { version = "0.22.1", features = ["default", "tokio-comp", "async-std-comp", "cluster"] }
 r2d2 = "0.8.10"
 
+# mysql origin
+mysql = "*"
+
+# diesel orm
+diesel = { version = "2.0.2", features = ["default","mysql"] }
+
+# SeaORM
+sqlx = "0.6.2"
+sea-orm = { version = "0.10.6", features = [ "sqlx-mysql", "runtime-async-std-native-tls", "macros" ] }
+
+
 # rbatis integration
 rbs = "0.1.13"
 rbatis = "4.0.44"
 rbdc-mysql = "0.1.18"
 # rbdc-oracle = "0.1.1"
 # rbdc-sqlite = { version = "0.1" }
+
+# clickhouse http
+# clickhouse = {git = "https://github.com/loyd/clickhouse.rs", features = ["test-util"]}
+
+# clickhouse tcp
+clickhouse-rs = { git = "https://github.com/suharev7/clickhouse-rs", features = ["default"]}
+
 
 [[example]]
 name = "rbatis"
@@ -74,4 +92,34 @@ path = "examples/signal_sample.rs"
 [[example]]
 name = "rbatis_adapter"
 path = "examples/rbatis_adapter_sample.rs"
+
+[[example]]
+name = "tidb_origin_ssl"
+path = "examples/tidb_origin_ssl.rs"
+
+[[example]]
+name = "tidb_rbatis_ssl"
+path = "examples/tidb_rbatis_ssl.rs"
+
+[[example]]
+name = "tidb_sea_orm_ssl"
+path = "examples/tidb_sea_orm_ssl.rs"
+
+[[example]]
+name = "tidb_sqlx_ssl"
+path = "examples/tidb_sqlx_ssl.rs"
+
+[[example]]
+name = "tidb_diesel_ssl"
+path = "examples/tidb_diesel_ssl.rs"
+
+[[example]]
+name = "starwift-tcp"
+path = "examples/starwift_tcp.rs"
+
+[[example]]
+name = "starwift-http"
+path = "examples/starwift_http.rs"
+
+
 
